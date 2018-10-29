@@ -48,7 +48,7 @@ using Sqlite3Statement = Sqlite.Statement;
 using Sqlite3DatabaseHandle = SQLitePCL.sqlite3;
 using Sqlite3Statement = SQLitePCL.sqlite3_stmt;
 using Sqlite3 = SQLitePCL.raw;
-using UIC.Core;
+using Emilie.Core;
 #else
 using Sqlite3DatabaseHandle = System.IntPtr;
 using Sqlite3Statement = System.IntPtr;
@@ -2649,7 +2649,7 @@ namespace SQLite
             {
                 return "float";
             }
-            else if (clrType == typeof(String) || clrType == typeof(StringBuilder) || clrType == typeof(Uri) || clrType == typeof(UriBuilder))
+            else if (clrType == typeof(String) || clrType == typeof(StringBuilder) || clrType == typeof(Uri) || clrType == typeof(UriBuilder) || clrType == typeof(string[]))
             {
                 int? len = p.MaxStringLength;
 
@@ -3004,6 +3004,10 @@ namespace SQLite
                 {
                     SQLite3.BindText(stmt, index, str, -1, NegativePointer);
                 }
+                else if (value is string[] sar)
+                {
+                    SQLite3.BindText(stmt, index, String.Join("�", sar), -1, NegativePointer);
+                }
                 else if (value is Byte || value is UInt16 || value is SByte || value is Int16)
                 {
                     SQLite3.BindInt(stmt, index, Convert.ToInt32(value));
@@ -3204,6 +3208,10 @@ namespace SQLite
                 {
                     var text = SQLite3.ColumnString(stmt, index);
                     return new UriBuilder(text);
+                }
+                else if (clrType == typeof(String[]))
+                {
+                    return SQLite3.ColumnString(stmt, index).Split('�');
                 }
                 else
                 {

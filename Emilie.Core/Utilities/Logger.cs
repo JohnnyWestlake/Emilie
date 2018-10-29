@@ -62,5 +62,10 @@ namespace Emilie.Core
             Log(message, caller);
 #endif
         }
+
+        public static void Flush()
+        {
+
+        }
     }
 }
