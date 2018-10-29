@@ -35,7 +35,7 @@ namespace Emilie.UWP.Network
         {
             CoreHttpResponse response = new CoreHttpResponse();
 
-            Action<double> d;
+            //Action<double> d;
 
             using (HttpRequestMessage requestMessage = new HttpRequestMessage(new HttpMethod(request.Method.ToString()), new Uri(request.Uri)))
             {

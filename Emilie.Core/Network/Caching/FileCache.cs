@@ -42,7 +42,7 @@ namespace Emilie.Core.Network
 
         public Int32 MaxFileCount { get; }
 
-        public IFolder HttpCacheFolder { get; private set; }
+        public IFolder CacheFolder { get; private set; }
 
 
 
@@ -74,7 +74,7 @@ namespace Emilie.Core.Network
             (IFolder cacheFolder, IStreamCompressor compressor = null, int maxFileCount = DEFAULT_MAX_FILES)
         {
             _compressor = compressor;
-            HttpCacheFolder = cacheFolder;
+            CacheFolder = cacheFolder;
             FolderName = cacheFolder.Name;
         }
 
@@ -89,13 +89,13 @@ namespace Emilie.Core.Network
 
         public Task InitialiseAsync()
         {
-            if (HttpCacheFolder != null)
+            if (CacheFolder != null)
                 return Task.CompletedTask;
 
             return Task.Run(async () =>
             {
                 IFolder root = await _storageHelper.GetFolderFromPathAsync(_storageHelper.GetAppCacheFolderPath()).ConfigureAwait(false);
-                HttpCacheFolder = await root.CreateOrOpenFolderAsync(FolderName).ConfigureAwait(false);
+                CacheFolder = await root.CreateOrOpenFolderAsync(FolderName).ConfigureAwait(false);
             });
         }
 
@@ -113,10 +113,10 @@ namespace Emilie.Core.Network
         /// <returns></returns>
         public string GetPath(string uri)
         {
-            if (HttpCacheFolder == null)
+            if (CacheFolder == null)
                 throw new InvalidOperationException("Cache has not yet been initialized yet");
 
-            return Path.Combine(HttpCacheFolder.Path, Cryptography.GetMD5Hash(uri));
+            return Path.Combine(CacheFolder.Path, Cryptography.GetMD5Hash(uri));
         }
 
         public Task<CacheResult<byte[]>> GetBytesAsync(string uri, TimeSpan? expiry)
@@ -133,7 +133,7 @@ namespace Emilie.Core.Network
                 };
 
                 IFile file = null;
-                IFolder folder = HttpCacheFolder;
+                IFolder folder = CacheFolder;
 
                 String fileName = GetKey(uri);
 
@@ -203,14 +203,14 @@ namespace Emilie.Core.Network
             }
         }
 
-        public Task SaveAsync(string Uri, byte[] data)
+        public Task<bool> SaveAsync(string Uri, byte[] data)
         {
             return Task.Run(async () =>
             {
                 try
                 {
                     // 1. Attempt to open the correct folder and target file name
-                    IFolder folder = HttpCacheFolder;
+                    IFolder folder = CacheFolder;
                     String hash = GetKey(Uri);
 
                     // 2. Delete the old file if existing
@@ -237,10 +237,13 @@ namespace Emilie.Core.Network
                         else
                             stream.Write(data, 0, data.Length);
                     }
+
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     Logger.Log(ex);
+                    return false;
                 }
             });
         }
@@ -252,7 +255,7 @@ namespace Emilie.Core.Network
             return Task.Run(async () =>
             {
                 await InitialiseAsync().ConfigureAwait(false);
-                var files = await HttpCacheFolder.GetFilesAsync().ConfigureAwait(false);
+                var files = await CacheFolder.GetFilesAsync().ConfigureAwait(false);
 
 
                 // TODO : Can implement by interfacing out GetFilesByDateAsync(SortOrder),

@@ -129,50 +129,57 @@ namespace Emilie.Core.Network
             });
         }
 
-        public Task SaveAsync(string uri, byte[] data)
+        public Task<bool> SaveAsync(string uri, byte[] data)
         {
             return Task.Run(async () =>
             {
                 string hashed = CreateHash64(uri).ToString();
                 byte[] blob = (_compressor == null) ? data : await CompressDataAsync(data).ConfigureAwait(false);
                 data = null;
+                bool result = false;
+
                 try
                 {
                     _rwLock.EnterWriteLock();
-
                     Connection.RunInTransaction(() =>
                     {
+                        if (!DoesCacheTableExist(Connection))
+                            Connection.CreateTable<SQLCacheEntry>();
+
+                        SQLCacheEntry entry = Connection.Find<SQLCacheEntry>(e => e.Key == hashed);
+
+                        if (entry != null)
                         {
-                            if (!DoesCacheTableExist(Connection))
-                                Connection.CreateTable<SQLCacheEntry>();
-
-                            SQLCacheEntry entry = Connection.Find<SQLCacheEntry>(e => e.Key == hashed);
-
-                            if (entry != null)
-                            {
-                                entry.Data = blob;
-                                entry.DateLastAccessed = DateTime.Now;
-                                Connection.Update(entry);
-                            }
-                            else
-                            {
-                                entry = new SQLCacheEntry()
-                                {
-                                    DateLastAccessed = DateTime.Now,
-                                    DateAdded = DateTime.Now,
-                                    Data = blob,
-                                    Key = hashed
-                                };
-
-                                Connection.Insert(entry);
-                            }
+                            entry.Data = blob;
+                            entry.DateLastAccessed = DateTime.Now;
+                            Connection.Update(entry);
                         }
+                        else
+                        {
+                            entry = new SQLCacheEntry()
+                            {
+                                DateLastAccessed = DateTime.Now,
+                                DateAdded = DateTime.Now,
+                                Data = blob,
+                                Key = hashed
+                            };
+
+                            Connection.Insert(entry);
+                        }
+
+                        result = true;
                     });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
                 }
                 finally
                 {
                     _rwLock.ExitWriteLock();
                 }
+
+                return result;
             });
         }
 

@@ -1710,10 +1710,11 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int Insert(object obj, string extra, Type objType)
+        public int Insert(object obj, string extra, Type objType, out long rowId)
         {
             if (obj == null || objType == null)
             {
+                rowId = -1;
                 return 0;
             }
 
@@ -1760,12 +1761,39 @@ namespace SQLite
                 {
                     var id = SQLite3.LastInsertRowid(Handle);
                     map.SetAutoIncPK(obj, id);
+                    rowId = id;
+                }
+                else
+                {
+                    rowId = -1;
                 }
             }
             if (count > 0)
                 OnTableChanged(map, NotifyTableChangedAction.Insert);
 
             return count;
+        }
+
+        /// <summary>
+        /// Inserts the given object (and updates its
+        /// auto incremented primary key if it has one).
+        /// The return value is the number of rows added to the table.
+        /// </summary>
+        /// <param name="obj">
+        /// The object to insert.
+        /// </param>
+        /// <param name="extra">
+        /// Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
+        /// </param>
+        /// <param name="objType">
+        /// The type of object to insert.
+        /// </param>
+        /// <returns>
+        /// The number of rows added to the table.
+        /// </returns>
+        public int Insert(object obj, string extra, Type objType)
+        {
+            return Insert(obj, extra, objType, out _);
         }
 
         readonly Dictionary<Tuple<string, string>, PreparedSqlLiteInsertCommand> _insertCommandMap = new Dictionary<Tuple<string, string>, PreparedSqlLiteInsertCommand>();

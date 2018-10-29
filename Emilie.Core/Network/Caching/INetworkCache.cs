@@ -53,7 +53,7 @@ namespace Emilie.Core.Network
 
         Task<CacheResult<byte[]>> GetBytesAsync(String uri, TimeSpan? expiry);
 
-        Task SaveAsync(string Uri, byte[] data);
+        Task<bool> SaveAsync(string Uri, byte[] data);
 
         Task TrimAsync();
 
