@@ -1,0 +1,17 @@
+﻿namespace Emilie.UWP.Media
+{
+    public static class CompositionProperty
+    {
+        public const string Translation = nameof(Translation);
+
+        public const string StartingValue = "this.StartingValue";
+
+        public const string FinalValue = "this.FinalValue";
+
+        public const string CurrentValue = "this.CurrentValue";
+
+        public const string Target = "this.Target";
+
+        public const string Pi = "Pi";
+    }
+}
