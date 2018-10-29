@@ -9,18 +9,17 @@ namespace Emilie.Core.Serialization
     [Flags]
     public enum SerializationMode
     {
-        None = 0,
         /// <summary>
         /// Serializer supports serializing to and from Strings
         /// </summary>
-        String = 1,
+        String,
         /// <summary>
         /// Serializer supports serializing to and from Streams
         /// </summary>
-        Stream = 2,
+        Stream,
         /// <summary>
         /// [NOT IMPLEMENETD] - For future use only.
         /// </summary>
-        All = 4,
+        All
     }
 }

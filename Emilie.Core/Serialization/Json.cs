@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Emilie.Core.Common;
 
 namespace Emilie.Core.Serialization
 {
@@ -74,7 +76,7 @@ namespace Emilie.Core.Serialization
             _defaultSerializer.NullValueHandling = NullValueHandling.Ignore;
             _defaultSerializer.DefaultValueHandling = DefaultValueHandling.Ignore;
 
-            using (StreamWriter writer = new StreamWriter(stream))
+            using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
             {
                 _defaultSerializer.Serialize(jsonWriter, data);
@@ -82,7 +84,6 @@ namespace Emilie.Core.Serialization
         }
 
         #endregion
-
 
 
 
@@ -119,8 +120,6 @@ namespace Emilie.Core.Serialization
 
             return result;
         }
-
-
 
         #endregion
     }

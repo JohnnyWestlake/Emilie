@@ -17,7 +17,6 @@ namespace Emilie.Core.Serialization
 
 
 
-
         //------------------------------------------------------
         //
         //  Serialize
@@ -72,7 +71,6 @@ namespace Emilie.Core.Serialization
 
 
 
-
         //------------------------------------------------------
         //
         //  Deserialize
@@ -117,13 +115,6 @@ namespace Emilie.Core.Serialization
             return (T)serializer.Deserialize(stream);
         }
 
-
-
         #endregion
-
-
-
-
-
     }
 }

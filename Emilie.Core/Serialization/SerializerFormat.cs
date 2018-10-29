@@ -3,7 +3,7 @@
 namespace Emilie.Core.Serialization
 {
     [Flags]
-    public enum SerializerType
+    public enum SerializerFormat
     {
         XML = 0,
         JSON = 1

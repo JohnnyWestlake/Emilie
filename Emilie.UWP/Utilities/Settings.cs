@@ -1,6 +1,8 @@
 ﻿using Emilie.Core;
 using Emilie.Core.Serialization;
+using Emilie.Core.Storage;
 using Emilie.UWP.Extensions;
+using Emilie.UWP.Storage;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -271,7 +273,7 @@ namespace Emilie.UWP
                     }
                     else
                     {
-                        await Files.WriteObjectAsync(file, value, serializer).ConfigureAwait(false);
+                        await Files.WriteObjectAsync(new WinRTFile(file), value, serializer).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -315,7 +317,7 @@ namespace Emilie.UWP
                         }
                         else
                         {
-                            result = await Files.ReadObjectAsync<T>(file, serializer).ConfigureAwait(false);
+                            result = await Files.ReadObjectAsync<T>(new WinRTFile(file), serializer).ConfigureAwait(false);
                         }
                     }
                 }

@@ -121,6 +121,7 @@
     <Compile Include="D2D\DWrite.cs" />
     <Compile Include="D2D\LineInformation.cs" />
     <Compile Include="D2D\Particle.cs" />
+    <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\Xaml.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Media\Animation.cs" />

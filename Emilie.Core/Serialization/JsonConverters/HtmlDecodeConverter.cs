@@ -1,20 +1,16 @@
-﻿using Emilie.Core;
-using Emilie.Core.Extensions;
+﻿using System;
 using Newtonsoft.Json;
-using System;
+using Emilie.Core.Extensions;
 
-namespace Emilie.UWP.JsonConverters
+namespace Emilie.Core.Serialization.JsonConverters
 {
     /// <summary>
     /// When deserializing the property, it attempts to HTML Decode
-    /// the content. Uses <see cref="Emilie.Core.Extensions.StringExtensions.StripHtml"/>
+    /// the content. Uses <see cref="UIC.Core.Extensions.StringExtensions.StripHtml"/>
     /// </summary>
     public class HTMLDecodeConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return true;
-        }
+        public override bool CanConvert(Type objectType) => true;
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -24,6 +20,7 @@ namespace Emilie.UWP.JsonConverters
                 {
                     if (objectType == typeof(string[]))
                     {
+
                         if (reader.TokenType == JsonToken.StartArray)
                         {
                             var obj = serializer.Deserialize(reader, objectType);
