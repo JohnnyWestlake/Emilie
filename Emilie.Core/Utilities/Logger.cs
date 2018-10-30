@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using UIC.Core.Utilities;
 
 namespace Emilie.Core
 {
@@ -9,44 +11,49 @@ namespace Emilie.Core
     /// Writes log information to the debug window.
     /// By implementing <see cref="ILogger"/> and registering the implementation
     /// using ResgisterLogger(myILogger), you can also use additional logging
-    /// implementations automatically. (For example, you can implement a bugsense
-    /// ILogger that will send all logged exceptions to BugSense)
+    /// implementations automatically. 
     /// </summary>
     public class Logger
     {
         private static List<ILogger> _loggerPool = new List<ILogger>();
 
-        public static void RegsiterLogger(ILogger logger)
+        static Logger()
+        {
+            RegisterLogger(new DebugConsoleLogger());
+        }
+
+        public static void RegisterLogger(ILogger logger)
         {
             _loggerPool.Add(logger);
         }
 
+        public static bool RemoveLogger(ILogger logger)
+        {
+            return _loggerPool.Remove(logger);
+        }
+
+        public static bool RemoveLogger(Type t)
+        {
+            if (_loggerPool.FirstOrDefault(l => l.GetType() == t) is ILogger logger)
+                return RemoveLogger(logger);
+
+            return false;
+        }
+
         public static void Log(Exception exception, [CallerMemberName] string caller = null)
         {
-            var s = String.Format("{0}: {1}", DateTime.Now.ToLocalTime().ToString(), exception.ToString());
-            Debug.WriteLine(s);
-
-            // Ensure any subscribed loggers also log this exception
             foreach (var logger in _loggerPool)
                 logger.Log(exception, caller);
         }
 
         public static void Log(String message)
         {
-            var s = String.Format("{0}: {1}", DateTime.Now.ToLocalTime().ToString(), message);
-            Debug.WriteLine(s);
-
-            // Ensure any subscribed loggers also log this message
             foreach (var logger in _loggerPool)
                 logger.Log(message);
         }
 
         public static void Log(String message, String title)
         {
-            var s = String.Format("{0}: {2} - {1}", DateTime.Now.ToLocalTime().ToString(), message, title);
-            Debug.WriteLine(s);
-
-            // Ensure any subscribed loggers also log this title and message
             foreach (var logger in _loggerPool)
                 logger.Log(title, message);
         }
@@ -65,7 +72,13 @@ namespace Emilie.Core
 
         public static void Flush()
         {
-
+            Task.Run(async () =>
+            {
+                foreach (ILogger logger in _loggerPool)
+                {
+                    await logger.FlushAsync().ConfigureAwait(false);
+                }
+            }).Wait();
         }
     }
 }

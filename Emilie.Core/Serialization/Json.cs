@@ -3,10 +3,12 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Emilie.Core.Common;
 
 namespace Emilie.Core.Serialization
 {
+    /// <summary>
+    /// A default JSON serializer implemented using JSON.Net
+    /// </summary>
     public class Json : BasicDefaultable<Json>, ISerializer
     {
         JsonSerializer _defaultSerializer = new JsonSerializer();
