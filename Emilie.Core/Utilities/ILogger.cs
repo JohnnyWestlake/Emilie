@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Emilie.Core
 {
@@ -8,5 +9,6 @@ namespace Emilie.Core
         void Log(String message);
         void Log(String message, String title);
         void DebugLog(String message, String callerMemberName = null);
+        Task FlushAsync();
     }
 }

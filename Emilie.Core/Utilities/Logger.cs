@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Emilie.Core.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using UIC.Core.Utilities;
 
 namespace Emilie.Core
 {
@@ -19,7 +19,9 @@ namespace Emilie.Core
 
         static Logger()
         {
+#if DEBUG
             RegisterLogger(new DebugConsoleLogger());
+#endif
         }
 
         public static void RegisterLogger(ILogger logger)
