@@ -231,6 +231,17 @@ namespace Emilie.Core
         }
 
 
+        public void DetachPropertyChangedListeners()
+        {
+            if (PropertyChanged != null)
+            {
+                foreach (Delegate d in PropertyChanged?.GetInvocationList())
+                {
+                    PropertyChanged -= (PropertyChangedEventHandler)d;
+                }
+            }
+        }
+
         /// <summary>
         /// Removes the value of a property from the internal dictionary store.
         /// The default value of this property is returned if the property getter

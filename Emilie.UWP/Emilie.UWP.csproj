@@ -117,6 +117,7 @@
     <Compile Include="Common\UWPDispatcherTimer.cs" />
     <Compile Include="Common\UWPMemoryDiagnosticProvider.cs" />
     <Compile Include="Common\UWPStorageHelper.cs" />
+    <Compile Include="Common\ViewModelHelper.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="D2D\ColorMatrixes.cs" />
     <Compile Include="D2D\DWrite.cs" />
