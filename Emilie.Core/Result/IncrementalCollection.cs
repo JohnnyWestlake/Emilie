@@ -107,6 +107,8 @@ namespace Emilie.Core
         #endregion Constructors
 
 
+
+
         //------------------------------------------------------
         //
         //  Public Methods
@@ -197,6 +199,8 @@ namespace Emilie.Core
         #endregion Public Methods
 
 
+
+
         //------------------------------------------------------
         //
         //  Public Events
@@ -230,6 +234,8 @@ namespace Emilie.Core
         public virtual event NotifyCollectionChangedEventHandler CollectionChanged;
 
         #endregion Public Events
+
+
 
 
         //------------------------------------------------------
@@ -413,6 +419,8 @@ namespace Emilie.Core
         #endregion Protected Methods
 
 
+
+
         //------------------------------------------------------
         //
         //  Private Methods
@@ -485,6 +493,9 @@ namespace Emilie.Core
 
         #endregion Private Methods
 
+
+
+
         //------------------------------------------------------
         //
         //  Private Types
@@ -513,6 +524,9 @@ namespace Emilie.Core
 
         #endregion Private Types
 
+
+
+
         //------------------------------------------------------
         //
         //  Private Fields
@@ -533,6 +547,9 @@ namespace Emilie.Core
 
         #endregion Private Fields
 
+
+
+
         //------------------------------------------------------
         //
         //  Result Collection Bindable Properties
@@ -546,7 +563,7 @@ namespace Emilie.Core
         /// </summary>
         public Boolean CanLoadMoreItems
         {
-            get { return GetProperty<Boolean>(true); }
+            get { return GetProperty(true); }
             set
             {
                 if (SetProperty(value))
@@ -741,6 +758,8 @@ namespace Emilie.Core
         #endregion
 
 
+
+
         //------------------------------------------------------
         //
         //  Bindable Base Implementation
@@ -886,6 +905,8 @@ namespace Emilie.Core
         #endregion
 
 
+
+
         //------------------------------------------------------
         //
         //  Incremental Loading Support
@@ -897,52 +918,53 @@ namespace Emilie.Core
         /// <summary>
         /// Action called by ISupportIncrementalLoading
         /// </summary>
-        public CoreWeakFunc<Task> AsyncLoadAction { get; set; }
+        public CoreWeakFunc<Task<uint>, Func<uint, Task<uint>>> WeakAsyncLoadAction { get; set; }
 
+        public Func<IncrementalCollection<T>, uint, Task<uint>> AsyncLoadAction { get; set; }
+
+        Task<uint> ExecuteLoadMoreActionAsync(uint count)
+        {
+            if (WeakAsyncLoadAction != null)
+                return WeakAsyncLoadAction.Execute().Invoke(count);
+
+            if (AsyncLoadAction != null)
+                return AsyncLoadAction.Invoke(this, count);
+
+            return Task.FromResult((uint)0);
+        }
+
+        bool HasLoadAction()
+        {
+            if (WeakAsyncLoadAction != null)
+                return WeakAsyncLoadAction.IsAlive;
+
+            if (AsyncLoadAction != null)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to load more items into the collection
+        /// </summary>
+        /// <param name="count">Number of items to load</param>
+        /// <returns>Number of items actually loaded</returns>
         public Task<uint> LoadMoreAsync(uint count)
         {
-            TaskCompletionSource<uint> tcs = new TaskCompletionSource<uint>();
+            if (HasLoadAction())
+                return ExecuteLoadMoreActionAsync(count);
+            else if (WeakAsyncLoadAction == null)
+                throw new ArgumentNullException();
+            else if (!WeakAsyncLoadAction.IsAlive)
+                throw new ArgumentOutOfRangeException("Load Action is no longer alive");
 
-            Task.Run(
-                async () =>
-                {
-                    try
-                    {
-                        if (AsyncLoadAction != null && AsyncLoadAction.IsAlive)
-                        {
-                            if (Dispatcher.HasThreadAccess)
-                            {
-                                await AsyncLoadAction.Execute();
-
-                            }
-                            else
-                            {
-                                var a = Dispatcher.MarshallAsync(async () =>
-                                {
-                                    await AsyncLoadAction.Execute();
-                                    tcs.TrySetResult((uint)this.Items.Count);
-                                }, DispatcherPriority.Normal);
-                            }
-                        }
-                        else if (AsyncLoadAction == null)
-                            throw new ArgumentNullException();
-                        else if (!AsyncLoadAction.IsAlive)
-                            throw new ArgumentOutOfRangeException("Load Action is no longer alive");
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log(ex);
-                        tcs.TrySetException(ex);
-                    }
-
-
-                });
-
-            return tcs.Task;
+            return null;
         }
 
         #endregion
+
+
+
+
     }
-
-
 }
