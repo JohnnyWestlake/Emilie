@@ -14,7 +14,7 @@ namespace Emilie.Core.Network
         /// <summary>
         /// Update this with necessary media types as we use them
         /// </summary>
-        private static HashSet<string> KNOWN_MEDIA_TYPES = new HashSet<string>
+        private static HashSet<string> KNOWN_MEDIA_TYPES { get; } = new HashSet<string>
         {
             MediaTypes.ApplicationJson,
             MediaTypes.ApplicationJsonVnd,
@@ -30,6 +30,44 @@ namespace Emilie.Core.Network
         // Send
         //
         //------------------------------------------------------
+
+        public static Task<HttpResult<T>> SendAsync<T>(
+            Endpoint<T> endpoint,
+            byte[] content = null,
+            ICoreHttpClient client = null,
+            Action<HttpResult<T>> updateCallback = null,
+            CancellationToken token = default)
+        {
+            if (endpoint.Method.Method == CoreHttpMethod.Get.Method)
+            {
+                return GetAsync(
+                        endpoint.Uri.AbsoluteUri,
+                        endpoint,
+                        client,
+                        updateCallback,
+                        token);
+            }
+            else if (endpoint.Method == CoreHttpMethod.Post)
+            {
+                return PostContentAsync<T>(
+                    endpoint.Uri.AbsoluteUri,
+                    content,
+                    endpoint,
+                    client,
+                    token);
+            }
+            else if (endpoint.Method == CoreHttpMethod.Delete)
+            {
+                return DeleteAsync<T>(
+                    endpoint,
+                    client,
+                    token);
+            }
+            else
+            {
+                throw new NotImplementedException(endpoint.Method.Method);
+            }
+        }
 
         #region SendInternal
 

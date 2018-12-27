@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Emilie.Core.Network
 {
@@ -81,7 +83,7 @@ namespace Emilie.Core.Network
             if (options.CacheMode != CacheMode.None && options.CacheMode != CacheMode.SystemManaged)
             {
                 if (cache == null)
-                    throw new ArgumentNullException("Http.DefaultCache", "The default HTTP cache has not been set. Using the Http cache will fail");
+                    throw new ArgumentNullException("Http.DefaultCache", "The default HTTP cache has not been set. Using the Http cache will fail.");
 
                 string cacheKey = options.CacheKeyOverride ?? Uri;
                 cachedata = await cache.GetBytesAsync(cacheKey, options.CacheExpiry).ConfigureAwait(false);
@@ -118,7 +120,7 @@ namespace Emilie.Core.Network
                     else
                     {
                         // 4. Update the cache asynchronously if required
-                        if (options.CacheMode == CacheMode.UpdateAsync || (cachedata.Expired && options.CacheMode == CacheMode.UpdateAsyncIfExpired))
+                        if (ShouldCache(options, cachedata, result))
                         {
                             _ = Task.Run(async () =>
                             {
@@ -227,6 +229,20 @@ namespace Emilie.Core.Network
 
             // 5 - Return our final result!
             return result;
+        }
+
+        private static bool ShouldCache(HttpOptions options, CacheResult<byte[]> cachedata, HttpResult result)
+        {
+            //bool allowed = true;
+            //if (options.CacheBehavior == CacheBehavior.WhenRequestedIfAllowed)
+            //{
+            //    if (result.ResponseHeaders != null && result.ResponseHeaders.TryGetValue("Cache-Control", out IReadOnlyCollection<string> values))
+            //    {
+            //        allowed = !values.Contains("no-cache");
+            //    }
+            //}
+
+            return options.CacheMode == CacheMode.UpdateAsync || (cachedata.Expired && options.CacheMode == CacheMode.UpdateAsyncIfExpired);
         }
 
         #endregion

@@ -108,7 +108,7 @@ namespace Emilie.Core.Network
                         // 3. Set the HttpClient we'll be using. If one isn't passed in
                         //    as an override, we'll create a new non-caching client
                         ICoreHttpClient internalClient = client ?? Http.NonCachingClient;
-                        await SendInternalAsync(endpoint, CoreHttpMethod.Post, content, options, client, byteResult, token).ConfigureAwait(false);
+                        await SendInternalAsync(endpoint, CoreHttpMethod.Post, content, options, internalClient, byteResult, token).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

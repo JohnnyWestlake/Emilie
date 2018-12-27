@@ -14,7 +14,8 @@ namespace Emilie.UWP.Network
 
             foreach (var header in optionHeaders)
             {
-                headers.TryAppendWithoutValidation(header.Key, header.Value.First());
+                if (header.Value.First() is string value)
+                    headers.TryAppendWithoutValidation(header.Key, value);
             }
         }
 
@@ -25,7 +26,8 @@ namespace Emilie.UWP.Network
 
             foreach (var header in optionHeaders)
             {
-                headers.TryAppendWithoutValidation(header.Key, header.Value.First());
+                if (header.Value.First() is string value)
+                    headers.TryAppendWithoutValidation(header.Key, value);
             }
         }
 

@@ -17,6 +17,14 @@ namespace Emilie.Core.Network
             }
         }
 
+        public HeaderCollection(IEnumerable<(string Key, string Value)> headers)
+        {
+            foreach (var (Key, Value) in headers)
+            {
+                this.Add(Key, Value);
+            }
+        }
+
         public HeaderCollection(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
         {
             foreach (var header in headers)
