@@ -5,6 +5,8 @@ namespace Emilie.Core.Network
 {
     public class HeaderCollection : MultiValueDictionary<string, string>
     {
+        static char[] _splitters { get; } = new char[1] { ',' };
+
         public HeaderCollection() : base()
         {
         }
@@ -13,7 +15,9 @@ namespace Emilie.Core.Network
         {
             foreach(var header in headers)
             {
-                this.Add(header.Key, header.Value);
+                if (!string.IsNullOrWhiteSpace(header.Value))
+                    foreach (var subheader in header.Value.Split(_splitters, System.StringSplitOptions.RemoveEmptyEntries))
+                        this.Add(header.Key, subheader.Trim());
             }
         }
 
@@ -21,7 +25,9 @@ namespace Emilie.Core.Network
         {
             foreach (var (Key, Value) in headers)
             {
-                this.Add(Key, Value);
+                if (!string.IsNullOrWhiteSpace(Value))
+                    foreach (var subheader in Value.Split(_splitters, System.StringSplitOptions.RemoveEmptyEntries))
+                        this.Add(Key, subheader.Trim());
             }
         }
 
