@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emilie.Core", "Emilie.Core\Emilie.Core.csproj", "{DF88BCC0-D360-489A-817E-CA77A45D2D37}"
 EndProject
@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emilie.UWP", "Emilie.UWP\Em
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emilie.UWP.UI", "Emilie.UWP.UI\Emilie.UWP.UI.csproj", "{693E2BFE-2E11-4F82-86AB-38FF2A077042}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emilie.Core.Network.Http", "Emilie.Core.Network.Http\Emilie.Core.Network.Http.csproj", "{48FE9F1E-4525-40E2-97DD-2E41C359E2FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emilie.Core.Network.Http", "Emilie.Core.Network.Http\Emilie.Core.Network.Http.csproj", "{48FE9F1E-4525-40E2-97DD-2E41C359E2FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emilie.Core.Html", "Emilie.Core.Html\Emilie.Core.Html.csproj", "{24724512-CC57-4634-9731-5CC4BFE0332E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,22 @@ Global
 		{48FE9F1E-4525-40E2-97DD-2E41C359E2FE}.Release|x64.Build.0 = Release|Any CPU
 		{48FE9F1E-4525-40E2-97DD-2E41C359E2FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{48FE9F1E-4525-40E2-97DD-2E41C359E2FE}.Release|x86.Build.0 = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|x64.Build.0 = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Debug|x86.Build.0 = Debug|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|ARM.Build.0 = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|x64.ActiveCfg = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|x64.Build.0 = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|x86.ActiveCfg = Release|Any CPU
+		{24724512-CC57-4634-9731-5CC4BFE0332E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

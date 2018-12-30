@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Emilie.UWP.Extensions
+namespace Emilie.Core.Extensions
 {
     /// <summary>
     /// Useful extensions when working with HtmlNode's from HtmlAgilityPack.

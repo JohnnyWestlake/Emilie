@@ -151,7 +151,6 @@
     <Compile Include="Converters\VisibilityToIncrementalLoadingTriggerConverter.cs" />
     <Compile Include="Extensions\DataExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
-    <Compile Include="Extensions\HtmlAgilityExtensions.cs" />
     <Compile Include="Extensions\MediaExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
@@ -207,9 +206,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack">
-      <Version>1.8.9</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.9</Version>
     </PackageReference>

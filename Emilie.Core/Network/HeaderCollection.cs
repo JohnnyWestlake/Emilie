@@ -13,6 +13,9 @@ namespace Emilie.Core.Network
 
         public HeaderCollection(IEnumerable<KeyValuePair<string, string>> headers)
         {
+            if (headers == null)
+                return;
+
             foreach(var header in headers)
             {
                 if (!string.IsNullOrWhiteSpace(header.Value))
@@ -23,6 +26,9 @@ namespace Emilie.Core.Network
 
         public HeaderCollection(IEnumerable<(string Key, string Value)> headers)
         {
+            if (headers == null)
+                return;
+
             foreach (var (Key, Value) in headers)
             {
                 if (!string.IsNullOrWhiteSpace(Value))
@@ -33,6 +39,9 @@ namespace Emilie.Core.Network
 
         public HeaderCollection(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
         {
+            if (headers == null)
+                return;
+
             foreach (var header in headers)
             {
                 this.AddRange(header.Key, header.Value);

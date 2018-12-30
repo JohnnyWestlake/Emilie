@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Emilie.Core.Storage
 {
+    /// <summary>
+    /// <see cref="IFile"/> implementation utilising <see cref="System.IO.FileInfo"/> API's.
+    /// </summary>
     public class CoreFile : IFile
     {
         FileInfo _fileInfo { get; }
