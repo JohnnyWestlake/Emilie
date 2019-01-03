@@ -606,7 +606,8 @@ namespace Emilie.Core
                     OnPropertiesChanged(
                         nameof(IsEmptyLoading),
                         nameof(IsSubsequentLoading),
-                        nameof(CanLoadMoreItems));
+                        nameof(CanLoadMoreItems),
+                        nameof(HasMoreItems));
                 }
             }
         }
@@ -750,7 +751,9 @@ namespace Emilie.Core
             {
                 if (SetProperty(value))
                 {
-                    OnPropertyChanged(nameof(IsFirstLoadFaulted));
+                    OnPropertiesChanged(
+                        nameof(IsFirstLoadFaulted),
+                        nameof(HasMoreItems));
                 }
             }
         }
@@ -802,7 +805,7 @@ namespace Emilie.Core
             {
                 try
                 {
-                    return AsyncLoadAction != null && CanLoadMoreItems && !IsLoading;
+                    return AsyncLoadAction != null && CanLoadMoreItems && !IsLoading && !IsFaulted;
                 }
                 catch (Exception ex)
                 {
