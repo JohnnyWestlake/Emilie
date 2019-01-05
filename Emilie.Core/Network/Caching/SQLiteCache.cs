@@ -27,7 +27,7 @@ namespace Emilie.Core.Network
         private ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
         private string _databasePath { get; }
         private IStreamCompressor _compressor { get; }
-        public SQLiteConnection Connection { get; private set; }
+        public SQLiteConnection Connection { get; }
 
         public int MaxEntries = 300;
 
@@ -45,6 +45,18 @@ namespace Emilie.Core.Network
             Connection = new SQLiteConnection(_databasePath, SQLiteOpenFlags.Create | SQLiteOpenFlags.ReadWrite);
             Connection.CreateTable<SQLCacheEntry>();
             _compressor = compressor;
+        }
+
+        public SQLiteCache SetLockModeExclusive()
+        {
+            Connection.ExecuteScalar<string>("PRAGMA main.locking_mode=EXCLUSIVE");
+            return this;
+        }
+
+        public SQLiteCache SetLockModeNormal()
+        {
+            Connection.ExecuteScalar<string>("PRAGMA main.locking_mode=EXCLUSIVE");
+            return this;
         }
 
         public int GetMaxEntries() => MaxEntries;

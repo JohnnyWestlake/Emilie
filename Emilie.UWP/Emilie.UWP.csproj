@@ -119,6 +119,7 @@
     <Compile Include="Common\UWPStorageHelper.cs" />
     <Compile Include="Common\ViewModelHelper.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Converters\Converters.cs" />
     <Compile Include="D2D\ColorMatrixes.cs" />
     <Compile Include="D2D\DWrite.cs" />
     <Compile Include="D2D\LineInformation.cs" />

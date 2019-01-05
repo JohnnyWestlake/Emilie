@@ -259,10 +259,7 @@ namespace SQLite
         /// </param>
         public SQLiteConnection(string databasePath, SQLiteOpenFlags openFlags, bool storeDateTimeAsTicks = true)
         {
-            if (databasePath == null)
-                throw new ArgumentException("Must be specified", nameof(databasePath));
-
-            DatabasePath = databasePath;
+            DatabasePath = databasePath ?? throw new ArgumentException("Must be specified", nameof(databasePath));
 
             LibVersionNumber = SQLite3.LibVersionNumber();
 
@@ -556,8 +553,7 @@ namespace SQLite
                 foreach (var i in c.Indices)
                 {
                     var iname = i.Name ?? map.TableName + "_" + c.Name;
-                    IndexInfo iinfo;
-                    if (!indexes.TryGetValue(iname, out iinfo))
+                    if (!indexes.TryGetValue(iname, out IndexInfo iinfo))
                     {
                         iinfo = new IndexInfo
                         {
