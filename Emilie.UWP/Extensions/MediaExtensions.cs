@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Emilie.UWP.Extensions
@@ -43,6 +45,21 @@ namespace Emilie.UWP.Extensions
             {
                 await bitmap.SetSourceAsync(stream).ConfigureAwait(false);
             }
+        }
+
+        public static Color FromHex(string colorCode)
+        {
+            var hex = colorCode.Replace("#", "");
+            int argb = Int32.Parse(hex, NumberStyles.HexNumber);
+            byte a = 255;
+            if (hex.Length == 8)
+            {
+                a = (byte)((argb & -16777216) >> 0x18);
+            }
+            var r = (byte)((argb & 0xff0000) >> 0x10);
+            var g = (byte)((argb & 0xff00) >> 8);
+            var b = (byte)(argb & 0xff);
+            return Color.FromArgb(a, r, g, b);
         }
     }
 }

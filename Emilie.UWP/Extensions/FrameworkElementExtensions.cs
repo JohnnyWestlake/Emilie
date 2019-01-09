@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Emilie.Core;
+using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 
 namespace Emilie.UWP.Extensions
@@ -106,6 +108,32 @@ namespace Emilie.UWP.Extensions
         public static Boolean IsCurrentPage(this Page page)
         {
             return (page.Frame.Content == page);
+        }
+
+        /// <summary>
+        /// Tries to set a source of an Image to a string in the same method a XAML binding would. 
+        /// This should retain the same automatic optimisations that exist when declaring in markup
+        /// that are partially lost when explicitly creating an ImageSource as a BitmapImage in code.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static bool TrySetSource(this Image image, string source)
+        {
+            if (Uri.IsWellFormedUriString(source, UriKind.Absolute))
+            {
+                try
+                {
+                    image.Source = XamlBindingHelper.ConvertValue(typeof(ImageSource), source) as ImageSource;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
+            }
+
+            return false;
         }
 
     }
