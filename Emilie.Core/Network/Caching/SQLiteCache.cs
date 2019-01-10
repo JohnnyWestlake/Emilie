@@ -55,7 +55,7 @@ namespace Emilie.Core.Network
 
         public SQLiteCache SetLockModeNormal()
         {
-            Connection.ExecuteScalar<string>("PRAGMA main.locking_mode=EXCLUSIVE");
+            Connection.ExecuteScalar<string>("PRAGMA main.locking_mode=NORMAL");
             return this;
         }
 
@@ -203,9 +203,10 @@ namespace Emilie.Core.Network
             {
                 try
                 {
+                    int itemCount = 0;
+
                     Connection.RunInTransaction(() =>
                     {
-                        int itemCount = 0;
                         TableQuery<SQLCacheEntry> toodelete;
                         try
                         {
@@ -232,14 +233,11 @@ namespace Emilie.Core.Network
                             _rwLock.EnterWriteLock();
 
                             // Find what we want to delete
-                            toodelete = Connection.Table<SQLCacheEntry>().OrderBy(entry => entry.DateLastAccessed).Take(GetMaxEntries() - itemCount);
+                            toodelete = Connection.Table<SQLCacheEntry>().OrderBy(entry => entry.DateLastAccessed).Take(itemCount - GetMaxEntries());
 
                             // Delete all the items we need too
                             foreach (var entry in toodelete.ToList())
                                 Connection.Delete(entry);
-
-                            // Clear the blank space
-                            Vacuum();
                         }
                         finally
                         {
@@ -248,6 +246,20 @@ namespace Emilie.Core.Network
 
 
                     });
+
+                    if (itemCount < GetMaxEntries())
+                    {
+                        try
+                        {
+                            // Clear the blank space
+                            _rwLock.EnterWriteLock();
+                            Vacuum();
+                        }
+                        finally
+                        {
+                            _rwLock.ExitWriteLock();
+                        }
+                    }
 
                 }
                 catch { }

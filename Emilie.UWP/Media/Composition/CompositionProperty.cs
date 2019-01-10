@@ -6,7 +6,11 @@
 
         public const string StartingValue = "this.StartingValue";
 
+        public const string StartingValue_Connected = "StartingValue";
+
         public const string FinalValue = "this.FinalValue";
+
+        public const string FinalValue_Connected = "FinalValue";
 
         public const string CurrentValue = "this.CurrentValue";
 

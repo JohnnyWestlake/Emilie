@@ -474,6 +474,11 @@ namespace Emilie.UWP.Media
             return animation;
         }
 
+        public static T AddExpressionKeyFrame<T>(this T animation, float normalizedProgressKey, string value, CubicBezierControlPoints ease) where T : KeyFrameAnimation
+        {
+            animation.InsertExpressionKeyFrame(normalizedProgressKey, value, animation.Compositor.CreateCubicBezierEasingFunction(ease));
+            return animation;
+        }
 
         public static T AddExpressionKeyFrame<T>(this T animation, float normalizedProgressKey, string value, CompositionEasingFunction ease = null) where T : KeyFrameAnimation
         {
