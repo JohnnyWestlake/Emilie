@@ -36,6 +36,12 @@ namespace Emilie.Core.Numerics
             ControlPoint2 = controlPoint2;
         }
 
+        public CubicBezierControlPoints(float x1, float y1, float x2, float y2)
+        {
+            ControlPoint1 = new Vector2(x1, y1);
+            ControlPoint2 = new Vector2(x2, y2);
+        }
+
 
         //*********************************************************
         //

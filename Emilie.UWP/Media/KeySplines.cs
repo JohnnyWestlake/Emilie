@@ -75,5 +75,21 @@ namespace Emilie.UWP.Media
         /// </summary>
         public static KeySpline FluentStandard =>
             Animation.CreateKeySpline(0.8, 0, 0.2, 1);
+
+
+
+
+
+        //------------------------------------------------------
+        //
+        //  Standard Penner Splines
+        //
+        //------------------------------------------------------
+
+        public static KeySpline CubicInOut =>
+            Animation.CreateKeySpline(0.645, 0.045, 0.355, 1);
+
+        public static KeySpline QuinticInOut =>
+            Animation.CreateKeySpline(0.86, 0, 0.07, 1);
     }
 }

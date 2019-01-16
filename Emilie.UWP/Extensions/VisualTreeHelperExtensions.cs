@@ -1,7 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Windows.UI.Xaml.Media
 {
@@ -17,10 +23,8 @@ namespace Windows.UI.Xaml.Media
         /// <typeparam name="T">Type of descendant to look for.</typeparam>
         /// <param name="start">The start object.</param>
         /// <returns></returns>
-        public static T GetFirstDescendantOfType<T>(this DependencyObject start) where T : DependencyObject
-        {
-            return start.GetDescendantsOfType<T>().FirstOrDefault();
-        }
+        public static T GetFirstDescendantOfType<T>(this DependencyObject start, bool applyTemplate = false) where T : DependencyObject
+            => start.GetDescendantsOfType<T>(applyTemplate).FirstOrDefault();
 
         /// <summary>
         /// Gets the descendants of the given type.
@@ -28,24 +32,94 @@ namespace Windows.UI.Xaml.Media
         /// <typeparam name="T">Type of descendants to return.</typeparam>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        public static IEnumerable<T> GetDescendantsOfType<T>(this DependencyObject start) where T : DependencyObject
+        public static IEnumerable<T> GetDescendantsOfType<T>(this DependencyObject start, bool applyTemplate = false) where T : DependencyObject
+            => start.GetDescendants(applyTemplate).OfType<T>();
+
+        /// <summary>
+        /// Returns the first matching descendant of each child node.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static IEnumerable<FrameworkElement> GetFirstLevelDescendants(this FrameworkElement start, Predicate<FrameworkElement> predicate = null)
         {
-            return start.GetDescendants().OfType<T>();
+            return GetFirstLevelDescendantsOfType(start, predicate);
         }
+
+        public static IEnumerable<T> GetFirstLevelDescendantsOfType<T>(this FrameworkElement start)
+        {
+            return GetFirstLevelDescendantsOfType<T>(start, null);
+        }
+
+        public static IEnumerable<T> GetFirstLevelDescendantsOfType<T>(this FrameworkElement start, Predicate<T> predicate)
+        {
+            var queue = new Queue<FrameworkElement>();
+            var count = VisualTreeHelper.GetChildrenCount(start);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (VisualTreeHelper.GetChild(start, i) is FrameworkElement child)
+                {
+                    if (child is T c && (predicate == null || predicate(c)))
+                    {
+                        yield return c;
+                        continue;
+                    }
+                    else
+                    {
+                        queue.Enqueue(child);
+                    }
+                };
+            }
+
+            while (queue.Count > 0)
+            {
+                var parent = queue.Dequeue();
+                var count2 = VisualTreeHelper.GetChildrenCount(parent);
+
+                for (int i = 0; i < count2; i++)
+                {
+                    if (VisualTreeHelper.GetChild(parent, i) is FrameworkElement child)
+                    {
+                        if (child is T c && (predicate == null || predicate(c)))
+                        {
+                            yield return c;
+                            continue;
+                        }
+                        else
+                        {
+                            queue.Enqueue(child);
+                        }
+                    };
+                }
+            }
+        }
+
 
         /// <summary>
         /// Gets the descendants.
         /// </summary>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        public static IEnumerable<DependencyObject> GetDescendants(this DependencyObject start)
+        public static IEnumerable<DependencyObject> GetDescendants(this DependencyObject start, bool applyTemplate = false)
         {
+            if (applyTemplate)
+            {
+                var st = start as Control;
+                if (start is Control)
+                    ((Control)start).ApplyTemplate();
+            }
+
             var queue = new Queue<DependencyObject>();
             var count = VisualTreeHelper.GetChildrenCount(start);
 
             for (int i = 0; i < count; i++)
             {
                 var child = VisualTreeHelper.GetChild(start, i);
+
+                if (applyTemplate && child is Control)
+                    ((Control)child).ApplyTemplate();
+
                 yield return child;
                 queue.Enqueue(child);
             }
@@ -58,6 +132,10 @@ namespace Windows.UI.Xaml.Media
                 for (int i = 0; i < count2; i++)
                 {
                     var child = VisualTreeHelper.GetChild(parent, i);
+
+                    if (applyTemplate && child is Control)
+                        ((Control)child).ApplyTemplate();
+
                     yield return child;
                     queue.Enqueue(child);
                 }
@@ -78,6 +156,22 @@ namespace Windows.UI.Xaml.Media
                 var child = VisualTreeHelper.GetChild(parent, i);
                 yield return child;
             }
+        }
+
+
+
+        public static T GetChildOfType<T>(this DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+
+                var result = (child as T) ?? GetChildOfType<T>(child);
+                if (result != null) return result;
+            }
+            return null;
         }
 
         /// <summary>
@@ -108,42 +202,15 @@ namespace Windows.UI.Xaml.Media
         /// <typeparam name="T">Type of ancestor to look for.</typeparam>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        public static T GetFirstAncestorOfType<T>(this DependencyObject start) where T : DependencyObject
-        {
-            return start.GetAncestorsOfType<T>().FirstOrDefault();
-        }
+        public static T GetFirstAncestorOfType<T>(this DependencyObject start) where T : DependencyObject => start.GetAncestorsOfType<T>().FirstOrDefault();
 
         /// <summary>
-        /// Gets the the ancestors of a given type.
+        /// Gets the ancestors of a given type.
         /// </summary>
         /// <typeparam name="T">Type of ancestor to look for.</typeparam>
         /// <param name="start">The start.</param>
         /// <returns></returns>
-        public static IEnumerable<T> GetAncestorsOfType<T>(this DependencyObject start) where T : DependencyObject
-        {
-            return start.GetAncestors().OfType<T>();
-        }
-
-        /// <summary>
-        /// Gets the the ancestors of a given type.
-        /// </summary>
-        /// <typeparam name="T">Type of ancestor to look for.</typeparam>
-        /// <param name="start">The start.</param>
-        /// <returns></returns>
-        public static IEnumerable<T> GetAncestorsOfTypeUntilFirst<T, T1>(this DependencyObject start) where T : DependencyObject where T1 : DependencyObject
-        {
-            bool found = false;
-            return start.GetAncestors().OfType<T>().TakeWhile(e =>
-            {
-                if (found)
-                    return false;
-
-                if (e.GetType() == typeof(T1))
-                    found = true;
-
-                return true;
-            });
-        }
+        public static IEnumerable<T> GetAncestorsOfType<T>(this DependencyObject start) where T : DependencyObject => start.GetAncestors().OfType<T>();
 
         /// <summary>
         /// Gets the ancestors.
@@ -268,6 +335,20 @@ namespace Windows.UI.Xaml.Media
                             dob.ActualHeight));
 
             return new Rect(pos, pos2);
+        }
+
+        public static bool ContainsFocus(this UIElement element)
+        {
+            if (element == null)
+                return false;
+
+            if (!(FocusManager.GetFocusedElement() is UIElement focused))
+                return false;
+
+            if (focused == element)
+                return true;
+
+            return focused.GetAncestors().Any(a => a == element);
         }
     }
 }

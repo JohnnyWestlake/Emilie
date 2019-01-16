@@ -17,24 +17,35 @@ namespace Emilie.Core.Services
     }
 
     /// <summary>
-    /// Register an item to be tracked for memory leaks
+    /// Register an item to be tracked for memory leaks.
+    /// Leak tracking only occurs is the Debugger is attached.
     /// </summary>
     public static class LeakTrackingService
     {
-        static Dictionary<String, WeakReference> _pool = new Dictionary<string, WeakReference>();
+        static List<(string, WeakReference)> _pool { get; } = new List<(string, WeakReference)>();
 
-        static LeakTrackerHelper helper = new LeakTrackerHelper();
+        static LeakTrackerHelper _helper { get; } = new LeakTrackerHelper();
 
         static bool _isActive = false;
+        static bool _isEnabled = false;
 
         static LeakTrackingService()
         {
             TryActivate();
         }
 
+        public static void Enable()
+        {
+            if (!_isEnabled)
+            {
+                _isEnabled = true;
+                TryActivate();
+            }
+        }
+
         static void TryActivate()
         {
-            if (_isActive)
+            if (!_isEnabled || _isActive)
                 return;
 
             if (Debugger.IsAttached)
@@ -42,12 +53,24 @@ namespace Emilie.Core.Services
                 DispatcherTimerHelper.RepeatEvery(TimeSpan.FromSeconds(10), CheckForLeaks);
                 _isActive = true;
                 // Workaround to allow us to get Media player plugins registered
-                //Messenger.Default.Register<object>(helper, "LeakTrace", true, source => helper.Register(source));
+                //Messenger.Default.Register<object>(_helper, "LeakTrace", true, source => helper.Register(source));
             }
         }
 
         static long objectid = 0;
         static ulong prevMem = 0;
+
+        static StringBuilder _sb = null;
+
+        static StringBuilder GetStringBuilder()
+        {
+            if (_sb == null)
+                _sb = new StringBuilder();
+            else
+                _sb.Clear();
+
+            return _sb;
+        }
 
         /// <summary>
         /// This method is automatically called every 10 seconds. 
@@ -55,57 +78,60 @@ namespace Emilie.Core.Services
         /// </summary>
         public static void CheckForLeaks()
         {
-            StringBuilder sb = new StringBuilder();
+            if (!Debugger.IsAttached)
+                return;
 
+            StringBuilder sb = GetStringBuilder();
 
+            sb.AppendLine();
             sb.AppendLine("\n\n*********************************");
             sb.AppendLine("*********************************");
-            sb.AppendLine("*** START LEAK TRACKING ********\n\n");
+            sb.AppendLine("****** START LEAK TRACKING ******\n\n");
 
-            //GC.Collect();
+            GC.Collect();
             AppMemoryDiagnosticReport report = CoreIoC.Get<IAppMemoryDiagnosticProvider>().GetMemoryDiagnosticReport();
 
-
-            foreach (KeyValuePair<string, WeakReference> entry in _pool.ToList())
+            foreach ((string key, WeakReference reference) entry in _pool.ToList())
             {
-                bool isAlive = entry.Value.IsAlive || entry.Value.Target != null;
+                var weakRef = entry.reference;
+                bool isAlive = weakRef.IsAlive || weakRef.Target != null;
                 if (!isAlive)
-                    _pool.Remove(entry.Key);
+                    _pool.Remove(entry);
 
-                sb.AppendLine(String.Format("{0} : {1}", entry.Key, isAlive ? "Alive" : "Collected"));
+                sb.AppendLine(String.Format("{0} : {1}", entry.key, isAlive ? "Alive" : "Collected"));
             }
 
             sb.AppendLine($"\nMemory Delta: {((long)report.AppPrivateWorkingSetUsage - (long)prevMem) / (1024 * 1024)} MB");
             sb.AppendLine($"Current Private Working Set usage: {(report.AppPrivateWorkingSetUsage / 1024) / 1024} MB out of {(report.AppMemoryUsageLimit / 1024) / 1024} MB");
-            sb.AppendLine("*** END LEAK TRACKING ********\n\n");
+            sb.AppendLine("******* END LEAK TRACKING *******\n\n");
             sb.AppendLine("*********************************");
             sb.AppendLine("*********************************");
             sb.AppendLine();
 
             Logger.Log(sb.ToString());
+            sb.Clear();
 
             prevMem = report.AppPrivateWorkingSetUsage;
         }
 
-        static Random rand = new Random();
+        static Random _rand { get; } = new Random();
 
         public static void Register(object obj)
         {
+            if (!Debugger.IsAttached || obj == null)
+                return;
+
             string key = obj.GetType().Name;
             string actualKey = string.Empty;
 
-            do
-            {
-                objectid++;
-                if (objectid > 99999)
-                    objectid = 0;
-                long id = objectid;
+            objectid++;
+            if (objectid > Int32.MaxValue)
+                objectid = 0;
+            long id = objectid;
 
-                actualKey = String.Format("{0}-{1:00000}", key, id);
-            }
-            while (_pool.ContainsKey(actualKey));
+            actualKey = String.Format("{0}-{1}", id, key);
 
-            _pool.Add(actualKey, new WeakReference(obj));
+            _pool.Add((actualKey, new WeakReference(obj)));
 
             Logger.Log(String.Format("LeakTrackingService: Added {0} as {1}", key, actualKey));
 

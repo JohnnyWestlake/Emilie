@@ -27,6 +27,15 @@ namespace Emilie.UWP.Converters
         public static string ToUpper(object o) => o?.ToString()?.ToUpper();
 
 
+        /* OBJECT */
+
+        public static bool IsNull(object o) => o is null;
+
+        public static bool IsNotNull(object o) => o != null;
+
+        public static string Format(DateTime? o, string format) => o?.ToString(format);
+
+
         /* VISIBILITY */
         // Note: x:Bind natively supports binding bool to vis, so no converter needed.
 
