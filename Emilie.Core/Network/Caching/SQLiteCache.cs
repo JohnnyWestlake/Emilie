@@ -11,7 +11,7 @@ using Emilie.Core.Storage;
 
 namespace Emilie.Core.Network
 {
-    public class SQLiteCache : BasicDefaultable<SQLiteCache>, INetworkCache
+    public class SQLiteCache : BasicDefaultable<SQLiteCache>, INetworkCache, IDisposable
     {
         #region Cache Instances
 
@@ -351,5 +351,10 @@ namespace Emilie.Core.Network
         #endregion
 
 
+
+        public void Dispose()
+        {
+            Connection.Close();
+        }
     }
 }

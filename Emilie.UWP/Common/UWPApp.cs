@@ -227,6 +227,28 @@ namespace Emilie.UWP
         {
             return (T)Current.Resources[key];
         }
+
+    }
+
+    public static class UWPAppExtensions
+    {
+        //------------------------------------------------------
+        //
+        //  Xbox Helpers
+        //
+        //------------------------------------------------------
+
+        public static T EnableGamePadFocus<T>(this T app) where T : UWPApp
+        {
+            app.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
+            return app;
+        }
+
+        public static T EnableRevealFocus<T>(this T app) where T : UWPApp
+        {
+            app.FocusVisualKind = FocusVisualKind.Reveal;
+            return app;
+        }
     }
 
 }

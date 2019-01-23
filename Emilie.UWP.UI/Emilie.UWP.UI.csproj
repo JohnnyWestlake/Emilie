@@ -121,6 +121,8 @@
     <ProjectReference Include="..\Emilie.Core\Emilie.Core.csproj">
       <Project>{4FA81D41-AE41-48D9-BC4A-9B290E39E960}</Project>
       <Name>Emilie.Core</Name>
+      <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
