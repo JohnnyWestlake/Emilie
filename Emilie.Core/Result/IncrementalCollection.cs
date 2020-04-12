@@ -17,7 +17,7 @@
 //---------------------------------------------------------------------------
 
 using Emilie.Core.Common;
-using Emilie.Core.MvvmLight;
+using GalaSoft.MvvmLight.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -921,7 +921,7 @@ namespace Emilie.Core
         /// <summary>
         /// Action called by ISupportIncrementalLoading
         /// </summary>
-        public CoreWeakFunc<Task<uint>, Func<uint, Task<uint>>> WeakAsyncLoadAction { get; set; }
+        public WeakFunc<Task<uint>, Func<uint, Task<uint>>> WeakAsyncLoadAction { get; set; }
 
         public Func<IncrementalCollection<T>, uint, Task<uint>> AsyncLoadAction { get; set; }
 
