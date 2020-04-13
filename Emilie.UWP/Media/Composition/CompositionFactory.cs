@@ -9,6 +9,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
 using System.Linq;
 using Emilie.Core.Numerics;
+using System.Globalization;
+using Microsoft.Graphics.Canvas.Effects;
 
 namespace Emilie.UWP.Media
 {
@@ -46,6 +48,27 @@ namespace Emilie.UWP.Media
             return newBrush;
         }
 
+        public static CompositionEffectBrush CreateBlurEffectBrush(Compositor c)
+        {
+            var backdrop = GetSharedBackdropBrush(c);
+            var graphicsEffect = new GaussianBlurEffect
+            {
+                Name = "Blur",
+                BlurAmount = 0f,
+                Source = new CompositionEffectSourceParameter("backdrop")
+            };
+
+            var effectFactory = Window.Current.Compositor.CreateEffectFactory(graphicsEffect, new[] { "Blur.BlurAmount" });
+            var effectBrush = effectFactory.CreateBrush();
+            effectBrush.SetSourceParameter("backdrop", backdrop);
+            return effectBrush;
+        }
+
+        public static CompositionEffectBrush SetBlurAmount(this CompositionEffectBrush brush, float amount)
+        {
+            brush.Properties.SetValue("Blur.BlurAmount", amount);
+            return brush;
+        }
 
 
 
@@ -175,8 +198,8 @@ namespace Emilie.UWP.Media
          */
 
         private static string CENTRE_EXPRESSION(float x, float y) =>
-            $"({nameof(Vector3)}({CompositionProperty.Target}.{nameof(Visual.Size)}.{nameof(Vector2.X)} * {x}f, " +
-            $"{CompositionProperty.Target}.{nameof(Visual.Size)}.{nameof(Vector2.Y)} * {y}f, 0f))";
+            $"({nameof(Vector3)}({CompositionProperty.Target}.{nameof(Visual.Size)}.{nameof(Vector2.X)} * {x.ToString(CultureInfo.InvariantCulture)}f, " +
+            $"{CompositionProperty.Target}.{nameof(Visual.Size)}.{nameof(Vector2.Y)} * {y.ToString(CultureInfo.InvariantCulture)}f, 0f))";
 
 
         /// <summary>
@@ -323,7 +346,7 @@ namespace Emilie.UWP.Media
         /// <param name="color">Default color of the shadow</param>
         /// <returns></returns>
         public static (SpriteVisual ContainerVisual, DropShadow Shadow) CreateDropShadow(
-            FrameworkElement sourceElement, 
+            object sourceElement, 
             FrameworkElement shadowHost, 
             double blurRadius, 
             Color color, 
@@ -332,7 +355,11 @@ namespace Emilie.UWP.Media
             float offsetY = 0f,
             float offsetZ = 0f)
         {
-            Visual vis = sourceElement.GetVisual();
+            Visual vis;
+            if (sourceElement is Visual v)
+                vis = v;
+            else
+                vis = ((FrameworkElement)(sourceElement)).GetVisual();
             Compositor c = vis.Compositor;
 
             SpriteVisual sprite = c.CreateSpriteVisual();
@@ -340,14 +367,23 @@ namespace Emilie.UWP.Media
             DropShadow shadow = c.CreateDropShadow();
             shadow.Color = color;
             shadow.BlurRadius = (float)blurRadius;
-            shadow.Opacity = 1f;
+            shadow.Opacity = opacity;
             sprite.Shadow = shadow;
             shadow.Offset = new Vector3(offsetX, offsetY, offsetZ);
 
-            if (Composition.GetAlphaMask(sourceElement) is CompositionBrush mask)
+            if (sourceElement is FrameworkElement src && Composition.GetAlphaMask(src) is CompositionBrush mask)
             {
                 shadow.Mask = mask;
                 shadow.SourcePolicy = CompositionDropShadowSourcePolicy.Default;
+            }
+            else if (sourceElement is ShapeVisual sv && sv.Shapes[0] is CompositionSpriteShape ss)
+            {
+                shadow.SourcePolicy = CompositionDropShadowSourcePolicy.Default;
+            }
+            else
+            {
+                shadow.Mask = c.CreateMaskBrush();
+                shadow.SourcePolicy = CompositionDropShadowSourcePolicy.InheritFromVisualContent;
             }
 
             if (shadowHost != null)
@@ -362,7 +398,7 @@ namespace Emilie.UWP.Media
                 }
 
                 container.Children.InsertAtTop(sprite);
-                CompositionFactory.LinkSize(sprite, shadowHost);
+                CompositionFactory.LinkSize(sprite, vis);
             }
 
             return (sprite, shadow);

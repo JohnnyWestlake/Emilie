@@ -184,9 +184,10 @@ namespace Emilie.UWP.Media
             ElementCompositionPreview.SetImplicitHideAnimation(element, animation);
         }
 
-        public static void SetChildVisual(this UIElement element, Visual visual)
+        public static T SetChildVisual<T>(this T element, Visual visual) where T : UIElement
         {
             ElementCompositionPreview.SetElementChildVisual(element, visual);
+            return element;
         }
 
         public static bool SupportsAlphaMask(UIElement element)
@@ -377,6 +378,17 @@ namespace Emilie.UWP.Media
             where T : KeyFrameAnimation
         {
             animation.DelayTime = delayTime;
+            return animation;
+        }
+
+        #endregion
+
+        #region SetDelayBehaviour
+
+        public static T SetDelayBehavior<T>(this T animation, AnimationDelayBehavior behavior)
+            where T : KeyFrameAnimation
+        {
+            animation.DelayBehavior = behavior;
             return animation;
         }
 

@@ -144,7 +144,7 @@
     <Compile Include="Media\Composition\CompositionEasings.cs" />
     <Compile Include="Media\MediaPlayerWrapper.cs" />
     <Compile Include="Media\Plugins\IMediaPlayerPlugin.cs" />
-    <Compile Include="Media\Presets.cs" />
+    <Compile Include="Media\StoryboardFactory.cs" />
     <Compile Include="Media\Properties.cs" />
     <Compile Include="Media\RenderTransform.cs" />
     <Compile Include="Media\TargetProperty.cs" />
