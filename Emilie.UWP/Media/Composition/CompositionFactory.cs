@@ -48,13 +48,13 @@ namespace Emilie.UWP.Media
             return newBrush;
         }
 
-        public static CompositionEffectBrush CreateBlurEffectBrush(Compositor c)
+        public static CompositionEffectBrush CreateBlurEffectBrush(Compositor c, float initialBlur = 0f)
         {
             var backdrop = GetSharedBackdropBrush(c);
             var graphicsEffect = new GaussianBlurEffect
             {
                 Name = "Blur",
-                BlurAmount = 0f,
+                BlurAmount = initialBlur,
                 Source = new CompositionEffectSourceParameter("backdrop")
             };
 

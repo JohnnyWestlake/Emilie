@@ -8,9 +8,11 @@ Some of code has been compiled from various sources and may be missing some attr
 
 The toolkit has been used, in various forms, in applications like:
 - Great British Chefs for Windows 8
+- MUTV for Xbox One
 - Showtime for Xbox One
 - HBO Now for Xbox One
 - CBS for Xbox One
+- AMC for Xbox One
 - WTA for Windows 8
 - CBS News for Windows Phone
 - Font Candy for Windows Phone & 8.1

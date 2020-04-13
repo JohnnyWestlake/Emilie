@@ -713,6 +713,12 @@ namespace Emilie.UWP.Media
             return animation;
         }
 
+        public static T SetParameter<T>(this T animation, string key, double parameter) where T : CompositionAnimation
+        {
+            animation.SetScalarParameter(key, (float)parameter);
+            return animation;
+        }
+
         public static T SetParameter<T>(this T animation, string key, Vector2 parameter) where T : CompositionAnimation
         {
             animation.SetVector2Parameter(key, parameter);
