@@ -21,6 +21,8 @@ namespace Emilie.Core.Network
 
             HttpClient client = new HttpClient(handler);
             client.EnableGzipDeflate(baseHandler);
+            client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue();
+
             client.DefaultRequestHeaders.CacheControl.Private = true;
             client.DefaultRequestHeaders.CacheControl.MaxAge = TimeSpan.Zero;
             client.DefaultRequestHeaders.CacheControl.NoCache = true;

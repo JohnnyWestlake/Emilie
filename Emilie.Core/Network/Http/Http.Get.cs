@@ -57,7 +57,7 @@ namespace Emilie.Core.Network
             var byteResult = await GetRawAsync(Uri, options, client, callback, token).ConfigureAwait(false);
 
             // 3. Convert from HttpResult<byte[]> to HttpResult<T>
-            return await ParseAsync<T>(byteResult, options.Serializer).ConfigureAwait(false);
+            return await ParseAsync<T>(byteResult, options?.Serializer).ConfigureAwait(false);
         }
 
         public static async Task<HttpResult<Byte[]>> GetRawAsync(

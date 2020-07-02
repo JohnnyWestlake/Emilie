@@ -24,7 +24,7 @@ namespace Emilie.Core
         public static void RegisterSingleton<TI, TC>(TC instance) where TI : class
         {
             if (instance is TI _)
-                _singletons.Add(typeof(TI), instance);
+                _singletons[typeof(TI)] = instance;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Emilie.Core
         /// <typeparam name="TC"></typeparam>
         public static void RegisterSingleton<TI, TC>() where TI : class where TC : new()
         {
-            _lazySingletons.Add(typeof(TI), typeof(TC));
+            _lazySingletons[typeof(TI)] = typeof(TC);
         }
 
         public static void Register<TI, TC>() where TI : class where TC : new()
